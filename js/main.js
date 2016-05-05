@@ -1,6 +1,29 @@
 var mainFunctions = (function() {
     // local vars
-    var BASEURL = "https://egov.uscis.gov/casestatus/mycasestatus.do";
+    const BASEURL = "https://egov.uscis.gov/casestatus/mycasestatus.do";
+    const PREFIX_LENGTH = 3;
+
+    function storageGet(keys) {
+        var dfd = $.Deferred();
+        chrome.storage.sync.get(keys, function(items) {
+            if(chrome.runtime.lastError)
+                dfd.reject(chrome.runtime.lastError);
+            else
+                dfd.resolve(items);
+        });
+        return dfd.promise();
+    }
+
+    function storageSet(items) {
+        var dfd = $.Deferred();
+        chrome.storage.sync.get(items, function() {
+            if(chrome.runtime.lastError)
+                dfd.reject(chrome.runtime.lastError);
+            else
+                dfd.resolve();
+        });
+        return dfd.promise();
+    }
 
     function delay(ms){ // http://stackoverflow.com/a/24188270
         var d = $.Deferred();
@@ -46,6 +69,8 @@ var mainFunctions = (function() {
         return dfd.promise();
     }
 
+    /** Helper to fetchStatus.
+     *  Try to fetch multiple times. When done, resolve dfd. */
     function tryFetchStatus(receiptNum, numToTry, dfd) {
         fetchStatusOnce(receiptNum).then(function(msg) {dfd.resolve(msg)}, function(e) {
             numToTry--;
@@ -59,16 +84,32 @@ var mainFunctions = (function() {
         return dfd;
     }
 
+    /** Fetch several times. 
+     *  @return a new promise. */
     function fetchStatus(receiptNum) {
         return tryFetchStatus(receiptNum, 5, $.Deferred());
     }
 
+    function fetchStatusAndSave(receiptNum) {
+        // storageGet({'record_' + receiptNum : {}}).then(function(items))
+        return fetchStatus(receiptNum); // FIXME
+    }
+
     function onload() {
         // onload here
+        storageGet({'lastReceiptNum': '', 'lastCount':''}).then(function(items) {
+            $('.form-query .input-receipt-num').val(items.lastReceiptNum)
+            $('.form-query .input-count').val(items.lastCount)
+        });
         $('.btn-query').click(function(event) {
             event.preventDefault();
             var receiptStr = $('.form-query .input-receipt-num').val();
-            var count = parseInt($('.form-query .input-count').val());
+            var count = $('.form-query .input-count').val();
+            storageSet({
+                'lastReceiptNum': receiptStr,
+                'lastCount': count
+            });
+            count = parseInt(count);
             var prefix = receiptStr.substr(0, 3);
             var receiptNum = parseInt(receiptStr.substr(3));
             var start = receiptNum - ~~(count / 2);
@@ -80,7 +121,7 @@ var mainFunctions = (function() {
             table.find('tbody tr.table-row-' + (receiptNum - start)).addClass('success')
             for(var i = 0; i < count; i++) {
                 (function(num, i){
-                    fetchStatus(prefix + num).then(function(msg) {
+                    fetchStatusAndSave(prefix + num).then(function(msg) {
                         var row = table.find('.table-row-' + i);
                         row.find('.table-col-receipt-num').text(prefix + num);
                         row.find('.table-col-result').text(msg)
