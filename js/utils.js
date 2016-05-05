@@ -1,4 +1,4 @@
-var mainFunctions = (function() {
+var utils = (function() {
     // local vars
     const BASEURL = "https://egov.uscis.gov/casestatus/mycasestatus.do";
     const PREFIX_LENGTH = 3;
@@ -146,4 +146,3 @@ var mainFunctions = (function() {
         onload: onload,
     }
 })();
-window.addEventListener('load', mainFunctions.onload);
