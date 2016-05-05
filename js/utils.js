@@ -2,6 +2,7 @@ var utils = (function() {
     // local vars
     const BASEURL = "https://egov.uscis.gov/casestatus/mycasestatus.do";
     const PREFIX_LENGTH = 3;
+    const RECORD_PREFIX = 'record_';
 
     function storageGet(keys) {
         var dfd = $.Deferred();
@@ -16,13 +17,22 @@ var utils = (function() {
 
     function storageSet(items) {
         var dfd = $.Deferred();
-        chrome.storage.sync.get(items, function() {
+        chrome.storage.sync.set(items, function() {
             if(chrome.runtime.lastError)
                 dfd.reject(chrome.runtime.lastError);
             else
-                dfd.resolve();
+                dfd.resolve(items);
         });
         return dfd.promise();
+    }
+
+    function shortDate(date) {
+        date = new Date(date).toISOString();
+        return date.slice(5,10) + ' ' + date.slice(11,16)
+    }
+
+    function keyValue(key, value) {
+        var d = {}; d[key] = value; return d;
     }
 
     function delay(ms){ // http://stackoverflow.com/a/24188270
@@ -31,8 +41,19 @@ var utils = (function() {
         return d.promise();
     }
     function rejectPromise(e) {
+        return $.Deferred().reject(e).promise();
+    }
+    function wrapFailPromise(p) {
         var dfd = $.Deferred();
-        dfd.reject(e);
+        p.then(function() {
+            var args = Array.prototype.slice.call(arguments);
+            args.splice(0, 0, true)
+            dfd.resolve.call(dfd, args)
+        }, function() {
+            var args = Array.prototype.slice.call(arguments);
+            args.splice(0, 0, false)
+            dfd.resolve.call(dfd, args)
+        });
         return dfd.promise();
     }
 
@@ -78,8 +99,8 @@ var utils = (function() {
                 dfd.reject(e);
                 return;
             }
-            dfd.notify(numToTry)
-            tryFetchStatus(receiptNum, numToTry, dfd)
+            dfd.notify(numToTry);
+            tryFetchStatus(receiptNum, numToTry, dfd);
         });
         return dfd;
     }
@@ -90,10 +111,34 @@ var utils = (function() {
         return tryFetchStatus(receiptNum, 5, $.Deferred());
     }
 
-    function fetchStatusAndSave(receiptNum) {
-        // storageGet({'record_' + receiptNum : {}}).then(function(items))
-        return fetchStatus(receiptNum); // FIXME
+    function recordIsSuccess(record) {
+        return record.status !== undefined && record.date !== undefined;
     }
+
+    function wrapRecordToMessage(record) {
+        if(recordIsSuccess(record)) 
+            return record.status + ' (' + shortDate(record.date) + ')'
+        return record.error_status + ' (' + shortDate(record.error_date) + ')'
+    }
+
+    function fetchStatusAndSave(receiptNum) {
+        var key = (RECORD_PREFIX + receiptNum)
+        return $.when(storageGet(keyValue(key, {})), wrapFailPromise(fetchStatus(receiptNum)))
+          .then(function(record, statusAndMessage) {
+            var isSuccess = statusAndMessage[0], message = statusAndMessage[1];
+            if(isSuccess) {
+                record = { status: message, date: new Date().getTime() }
+            } else {
+                record['error_status'] = message;
+                record['error_date'] = new Date().getTime();
+            }
+            return $.when(isSuccess, storageSet(keyValue(key, record)))
+        }).then(function(isSuccess, savedRecords) {
+            var msg = wrapRecordToMessage(savedRecords[key]);
+            return isSuccess ? msg : rejectPromise(msg);
+        });
+    }
+
 
     function onload() {
         // onload here
@@ -101,6 +146,35 @@ var utils = (function() {
             $('.form-query .input-receipt-num').val(items.lastReceiptNum)
             $('.form-query .input-count').val(items.lastCount)
         });
+        storageGet(null).then(function(items) {
+            var keys = $.map(items, function(v, k){ return k.startsWith(RECORD_PREFIX) ? k : undefined; });
+            return $.when(storageGet(keys), items.lastReceiptNum);
+        }).then(function(records, lastReceiptNum) {
+            var count = 0;
+            $.each(records, function() { count++; });
+            var table = $('.table-query-result');
+            var tbody = table.find('tbody');
+            tbody.html(tmpl(table.attr('template-id'), {count:count}));
+            var index = 0;
+            var recordHandler = function(k, v) {
+                k = k.substr(RECORD_PREFIX.length)
+                v = wrapRecordToMessage(v)
+                var row = tbody.find('tr.table-row-' + index)
+                row.find('.table-col-receipt-num').text(k);
+                row.find('.table-col-result').text(v);
+                if(!recordIsSuccess(v)) row.addClass('danger');
+                index++;
+            }
+            $.each(records, recordHandler);
+
+            var lastReceiptNumKey = RECORD_PREFIX + lastReceiptNum
+            if(lastReceiptNum && (lastReceiptNumKey in records)) {
+                var preRow = $(tmpl(table.attr('template-id'), {count: 1}))
+                    .removeClass().addClass('table-row-' + index);
+                tbody.prepend(preRow);
+                recordHandler(lastReceiptNumKey, records[lastReceiptNumKey]);
+            }
+        })
         $('.btn-query').click(function(event) {
             event.preventDefault();
             var receiptStr = $('.form-query .input-receipt-num').val();
@@ -114,7 +188,7 @@ var utils = (function() {
             var receiptNum = parseInt(receiptStr.substr(3));
             var start = receiptNum - ~~(count / 2);
             var table = $('.table-query-result');
-            preRow = $(tmpl(table.attr('template-id'), {count: 1}))
+            var preRow = $(tmpl(table.attr('template-id'), {count: 1}))
                 .removeClass().addClass('table-row-' + (receiptNum - start));
             table.find('tbody').html(preRow).append(
                 tmpl(table.attr('template-id'), {count: count}));
