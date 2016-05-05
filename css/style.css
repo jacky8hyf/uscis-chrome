@@ -1,0 +1,59 @@
+html, body {
+    height: 100%;
+}
+
+html {
+    display: table;
+    margin: auto;
+}
+
+body {
+    display: table-cell;
+    vertical-align: middle;
+    max-width: 960px;
+}
+
+.title, .subtitle {
+    text-align: center;
+}
+h2 {
+    text-align: left;
+}
+
+div.padded {  
+    padding-top: 0px;  
+    padding-right: 100px;  
+    padding-bottom: 0.25in;
+    padding-left: 100px;  
+}
+div.fig {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+div.fig img, div.fig pre {
+    display:inline-block;
+    border: 1px solid #CCC;
+}
+div.fig img {
+    height: 360px;
+    background-color:black;
+}
+
+div.table {
+    text-align: center;
+}
+div.table table {
+    display: inline-table;
+    border-collapse: collapse;
+}
+
+div.table th, div.table td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+div.table th + th, div.table td + td {
+    text-align: center;
+
+}
