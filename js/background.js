@@ -1,3 +1,8 @@
-chrome.browserAction.onClicked.addListener(function(tab) {
-  chrome.tabs.create({'url': chrome.extension.getURL('index.html')});
+chrome.app.runtime.onLaunched.addListener(function() {
+  chrome.app.window.create('index.html', {
+    'outerBounds': {
+      'width': 600,
+      'height':600
+    }
+  });
 });

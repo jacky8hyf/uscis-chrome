@@ -3,7 +3,7 @@ var utils = (function() {
     const BASEURL = "https://egov.uscis.gov/casestatus/mycasestatus.do";
     const PREFIX_LENGTH = 3;
     const RECORD_PREFIX = 'record_';
-
+    const ROW_TEMPLATE_ID = "table-row-template";
     function storageGet(keys) {
         var dfd = $.Deferred();
         chrome.storage.sync.get(keys, function(items) {
@@ -48,11 +48,13 @@ var utils = (function() {
         p.then(function() {
             var args = Array.prototype.slice.call(arguments);
             args.splice(0, 0, true)
-            dfd.resolve.call(dfd, args)
+            dfd.resolve.apply(dfd, args)
         }, function() {
             var args = Array.prototype.slice.call(arguments);
             args.splice(0, 0, false)
-            dfd.resolve.call(dfd, args)
+            dfd.resolve.apply(dfd, args)
+        }, function() {
+            dfd.notify.apply(dfd, arguments)
         });
         return dfd.promise();
     }
@@ -84,8 +86,8 @@ var utils = (function() {
                 return;
             }
             dfd.reject('could not analyze reponse from USCIS.');
-        }, function(e) {
-            dfd.reject(e);
+        }, function(xhr, ajaxOptions, thrownError) {
+            dfd.reject('Error connecting to USCIS.');
         });
         return dfd.promise();
     }
@@ -133,12 +135,25 @@ var utils = (function() {
                 record['error_date'] = new Date().getTime();
             }
             return $.when(isSuccess, storageSet(keyValue(key, record)))
+        }, null, function(progress1, progress2) {
+            return progress2;
         }).then(function(isSuccess, savedRecords) {
             var msg = wrapRecordToMessage(savedRecords[key]);
             return isSuccess ? msg : rejectPromise(msg);
         });
     }
 
+    function createRows(count) {
+        var rowDiv = $('#' + ROW_TEMPLATE_ID).clone();
+        var row = rowDiv.find('tr');
+        rowDiv.html('');
+        for(var i = 0; i < count; i++) {
+            var newRow = row.clone();
+            newRow.addClass("table-row-" + i);
+            rowDiv.append(newRow)
+        }
+        return rowDiv.html()
+    }
 
     function onload() {
         // onload here
@@ -154,7 +169,7 @@ var utils = (function() {
             $.each(records, function() { count++; });
             var table = $('.table-query-result');
             var tbody = table.find('tbody');
-            tbody.html(tmpl(table.attr('template-id'), {count:count}));
+            tbody.html(createRows(count));
             var index = 0;
             var recordHandler = function(k, v) {
                 k = k.substr(RECORD_PREFIX.length)
@@ -169,7 +184,7 @@ var utils = (function() {
 
             var lastReceiptNumKey = RECORD_PREFIX + lastReceiptNum
             if(lastReceiptNum && (lastReceiptNumKey in records)) {
-                var preRow = $(tmpl(table.attr('template-id'), {count: 1}))
+                var preRow = $(createRows( 1))
                     .removeClass().addClass('table-row-' + index);
                 tbody.prepend(preRow);
                 recordHandler(lastReceiptNumKey, records[lastReceiptNumKey]);
@@ -188,10 +203,10 @@ var utils = (function() {
             var receiptNum = parseInt(receiptStr.substr(3));
             var start = receiptNum - ~~(count / 2);
             var table = $('.table-query-result');
-            var preRow = $(tmpl(table.attr('template-id'), {count: 1}))
+            var preRow = $(createRows( 1))
                 .removeClass().addClass('table-row-' + (receiptNum - start));
             table.find('tbody').html(preRow).append(
-                tmpl(table.attr('template-id'), {count: count}));
+                createRows( count));
             table.find('tbody tr.table-row-' + (receiptNum - start)).addClass('success')
             for(var i = 0; i < count; i++) {
                 (function(num, i){
@@ -218,5 +233,6 @@ var utils = (function() {
 
     return {
         onload: onload,
+        fetchStatusOnce: fetchStatusOnce
     }
 })();
