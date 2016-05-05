@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "Getting started example",
-  "description": "This extension shows a Google Image search result for the current page",
+  "name": "USCIS Scraper",
+  "description": "Scrape data from USCIS",
   "version": "1.0",
 
   "browser_action": {
@@ -15,5 +15,6 @@
     "activeTab",
     "tabs",
     "https://egov.uscis.gov/"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

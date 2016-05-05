@@ -7,53 +7,37 @@ html {
     margin: auto;
 }
 
-body {
-    display: table-cell;
-    vertical-align: middle;
-    max-width: 960px;
+.container-main {
+    width: 600px;
 }
 
-.title, .subtitle {
-    text-align: center;
-}
-h2 {
-    text-align: left;
+.form-query {
+    width: 600px;
 }
 
-div.padded {  
-    padding-top: 0px;  
-    padding-right: 100px;  
-    padding-bottom: 0.25in;
-    padding-left: 100px;  
+.form-query .form-group-receipt-num {
+    width: 300px;
 }
-div.fig {
-    text-align: center;
-    margin-top: 10px;
-    margin-bottom: 30px;
-}
-div.fig img, div.fig pre {
-    display:inline-block;
-    border: 1px solid #CCC;
-}
-div.fig img {
-    height: 360px;
-    background-color:black;
+.form-query .form-group-count {
+    width: 180px;
 }
 
-div.table {
-    text-align: center;
-}
-div.table table {
-    display: inline-table;
-    border-collapse: collapse;
+.form-query .form-group-button {
+    width: 100px;
 }
 
-div.table th, div.table td {
-    text-align: left;
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
+.form-query .btn-query {
+    width: 100%;
 }
-div.table th + th, div.table td + td {
-    text-align: center;
 
+.form-query .input-fullw {
+    width: 100%;
+}
+
+.form-query {
+    margin-top: 20px;
+}
+
+.table-query-result {
+    margin-top: 20px;
 }
