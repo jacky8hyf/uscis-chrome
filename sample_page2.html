@@ -1,0 +1,805 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+<html lang="en-US">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+   
+  <meta name="description" content="View case status online using your receipt number, which can be found on notices that you may have received from USCIS. Also, sign up for myUSCIS to:
+• Receive automatic case status updates by email or text message,
+• View your case history and upcoming case activities,
+• Check the status of multiple cases and inquiries that you may have submitted to USCIS"/>
+  <title>myUSCIS</title> 
+
+  <script type="text/javascript">
+      var appName = 'myUSCIS';
+      var mainContentId = 'Content';
+      var cancelButtonCaption = 'Cancel';
+      var okButtonCaption = 'OK';
+      var closeButtonCaption = 'Close';
+      
+      Object.size = function(obj) {
+	    var size = 0, key;
+	    for( key in obj ) {
+	        if( obj.hasOwnProperty(key) ) size++;
+	    }
+	    return size;
+	  };
+
+	  var sessionTimeoutWarning = 'Your session will expire in 5 minutes. Click \'OK\' to extend your session.';
+	  var sessionExtended = 'Your session has been extended.';
+	  var sessionNotExtended = 'Your session will not be extended.';
+      
+  </script>
+  
+  <link rel="stylesheet" href="/casestatus/style/bootstrap.css" />
+  <link rel="stylesheet" href="/casestatus/style/style.css" />
+  <link rel="stylesheet" href="/casestatus/style/csso.css" />
+  <link rel="stylesheet" href="/casestatus/style/datatable.css" />
+  <link rel="stylesheet" href="/casestatus/style/fuelux.css" />    
+  <link rel="stylesheet" href="/casestatus/style/jquery/jquery-ui.min.css" />
+  
+  <script src="/casestatus/scripts/bootstrap/bootstrap.js" type="text/javascript"></script> 
+  <script src="/casestatus/scripts/jquery/jquery.min.js" type="text/javascript"></script>
+  <script src="/casestatus/scripts/jquery/jquery-migrate.min.js" type="text/javascript"></script>
+  <script src="/casestatus/scripts/jquery/jquery-ui.min.js" type="text/javascript"></script>   
+  <script src="/casestatus/scripts/fuelux.js" type="text/javascript"></script>
+   
+  <script  type="text/javascript">
+  	var $j= jQuery.noConflict();
+  </script>
+ 
+  <script src="/casestatus/scripts/jquery/jquery.validate.min.js" type="text/javascript"></script>   
+  <script src="/casestatus/scripts/custom.js" type="text/javascript"></script>
+  <script src="/casestatus/scripts/modernizr.js" type="text/javascript"></script> 
+  <script src="/casestatus/scripts/csso.js" type="text/javascript"></script>
+  <script src="/casestatus/scripts/dialog.js" type="text/javascript"></script>
+  
+  <script src="/casestatus/scripts/yui/yahoo-min.js" type="text/javascript"></script> 
+  <script src="/casestatus/scripts/yui/event-min.js" type="text/javascript"></script> 
+  <script src="/casestatus/scripts/yui/dom-min.js" type="text/javascript"></script>
+  <script src="/casestatus/scripts/yui/yahoo-dom-event.js" type="text/javascript"></script>
+  <script src="/casestatus/scripts/yui/container_core-min.js" type="text/javascript"></script>
+  <script src="/casestatus/scripts/yui/connection-min.js" type="text/javascript"></script>
+  <script src="/casestatus/scripts/google-analytics/federated-analytics-DHS.js" type="text/javascript"></script>
+  
+</head>
+
+<body>
+   
+  <script type="text/javascript">
+
+	var receiptPrefixMap = new Object;
+	
+	   receiptPrefixMap['ABQ'] = 'ABQ';
+	
+	   receiptPrefixMap['AGA'] = 'AGA';
+	
+	   receiptPrefixMap['ALB'] = 'ALB';
+	
+	   receiptPrefixMap['ANC'] = 'ANC';
+	
+	   receiptPrefixMap['ATL'] = 'ATL';
+	
+	   receiptPrefixMap['BAL'] = 'BAL';
+	
+	   receiptPrefixMap['BOI'] = 'BOI';
+	
+	   receiptPrefixMap['BOS'] = 'BOS';
+	
+	   receiptPrefixMap['BUF'] = 'BUF';
+	
+	   receiptPrefixMap['CHA'] = 'CHA';
+	
+	   receiptPrefixMap['CHI'] = 'CHI';
+	
+	   receiptPrefixMap['CHL'] = 'CHL';
+	
+	   receiptPrefixMap['CHR'] = 'CHR';
+	
+	   receiptPrefixMap['CIN'] = 'CIN';
+	
+	   receiptPrefixMap['CLE'] = 'CLE';
+	
+	   receiptPrefixMap['CLM'] = 'CLM';
+	
+	   receiptPrefixMap['CLT'] = 'CLT';
+	
+	   receiptPrefixMap['CSC'] = 'CSC';
+	
+	   receiptPrefixMap['DAL'] = 'DAL';
+	
+	   receiptPrefixMap['DEN'] = 'DEN';
+	
+	   receiptPrefixMap['DET'] = 'DET';
+	
+	   receiptPrefixMap['DSM'] = 'DSM';
+	
+	   receiptPrefixMap['EAC'] = 'EAC';
+	
+	   receiptPrefixMap['ELP'] = 'ELP';
+	
+	   receiptPrefixMap['FRE'] = 'FRE';
+	
+	   receiptPrefixMap['FSA'] = 'FSA';
+	
+	   receiptPrefixMap['GRR'] = 'GRR';
+	
+	   receiptPrefixMap['HAR'] = 'HAR';
+	
+	   receiptPrefixMap['HEL'] = 'HEL';
+	
+	   receiptPrefixMap['HHW'] = 'HHW';
+	
+	   receiptPrefixMap['HIA'] = 'HIA';
+	
+	   receiptPrefixMap['HLG'] = 'HLG';
+	
+	   receiptPrefixMap['HNT'] = 'HNT';
+	
+	   receiptPrefixMap['HOU'] = 'HOU';
+	
+	   receiptPrefixMap['IMP'] = 'IMP';
+	
+	   receiptPrefixMap['INP'] = 'INP';
+	
+	   receiptPrefixMap['IOE'] = 'IOE';
+	
+	   receiptPrefixMap['JAC'] = 'JAC';
+	
+	   receiptPrefixMap['JAK'] = 'JAK';
+	
+	   receiptPrefixMap['KAN'] = 'KAN';
+	
+	   receiptPrefixMap['KND'] = 'KND';
+	
+	   receiptPrefixMap['LAW'] = 'LAW';
+	
+	   receiptPrefixMap['LIN'] = 'LIN';
+	
+	   receiptPrefixMap['LNY'] = 'LNY';
+	
+	   receiptPrefixMap['LOS'] = 'LOS';
+	
+	   receiptPrefixMap['LOU'] = 'LOU';
+	
+	   receiptPrefixMap['LVG'] = 'LVG';
+	
+	   receiptPrefixMap['MAN'] = 'MAN';
+	
+	   receiptPrefixMap['MEM'] = 'MEM';
+	
+	   receiptPrefixMap['MIA'] = 'MIA';
+	
+	   receiptPrefixMap['MIL'] = 'MIL';
+	
+	   receiptPrefixMap['MSC'] = 'MSC';
+	
+	   receiptPrefixMap['MTL'] = 'MTL';
+	
+	   receiptPrefixMap['NBC'] = 'NBC';
+	
+	   receiptPrefixMap['NEW'] = 'NEW';
+	
+	   receiptPrefixMap['NOL'] = 'NOL';
+	
+	   receiptPrefixMap['NOR'] = 'NOR';
+	
+	   receiptPrefixMap['NSC'] = 'NSC';
+	
+	   receiptPrefixMap['NYC'] = 'NYC';
+	
+	   receiptPrefixMap['OAK'] = 'OAK';
+	
+	   receiptPrefixMap['OKC'] = 'OKC';
+	
+	   receiptPrefixMap['OKL'] = 'OKL';
+	
+	   receiptPrefixMap['OMA'] = 'OMA';
+	
+	   receiptPrefixMap['ORL'] = 'ORL';
+	
+	   receiptPrefixMap['PHI'] = 'PHI';
+	
+	   receiptPrefixMap['PHO'] = 'PHO';
+	
+	   receiptPrefixMap['PIT'] = 'PIT';
+	
+	   receiptPrefixMap['POM'] = 'POM';
+	
+	   receiptPrefixMap['POO'] = 'POO';
+	
+	   receiptPrefixMap['PRO'] = 'PRO';
+	
+	   receiptPrefixMap['QNS'] = 'QNS';
+	
+	   receiptPrefixMap['RAL'] = 'RAL';
+	
+	   receiptPrefixMap['REN'] = 'REN';
+	
+	   receiptPrefixMap['SAA'] = 'SAA';
+	
+	   receiptPrefixMap['SAC'] = 'SAC';
+	
+	   receiptPrefixMap['SAJ'] = 'SAJ';
+	
+	   receiptPrefixMap['SBD'] = 'SBD';
+	
+	   receiptPrefixMap['SEA'] = 'SEA';
+	
+	   receiptPrefixMap['SFR'] = 'SFR';
+	
+	   receiptPrefixMap['SFV'] = 'SFV';
+	
+	   receiptPrefixMap['SLC'] = 'SLC';
+	
+	   receiptPrefixMap['SNA'] = 'SNA';
+	
+	   receiptPrefixMap['SND'] = 'SND';
+	
+	   receiptPrefixMap['SNJ'] = 'SNJ';
+	
+	   receiptPrefixMap['SPM'] = 'SPM';
+	
+	   receiptPrefixMap['SPO'] = 'SPO';
+	
+	   receiptPrefixMap['SRC'] = 'SRC';
+	
+	   receiptPrefixMap['STA'] = 'STA';
+	
+	   receiptPrefixMap['STL'] = 'STL';
+	
+	   receiptPrefixMap['TAM'] = 'TAM';
+	
+	   receiptPrefixMap['TSC'] = 'TSC';
+	
+	   receiptPrefixMap['TUC'] = 'TUC';
+	
+	   receiptPrefixMap['VSC'] = 'VSC';
+	
+	   receiptPrefixMap['WAC'] = 'WAC';
+	
+	   receiptPrefixMap['WAS'] = 'WAS';
+	
+	   receiptPrefixMap['WIC'] = 'WIC';
+	
+	   receiptPrefixMap['WPB'] = 'WPB';
+	
+	   receiptPrefixMap['YAK'] = 'YAK';
+	
+	   receiptPrefixMap['YSC'] = 'YSC';
+	
+	   receiptPrefixMap['ZAR'] = 'ZAR';
+	
+	   receiptPrefixMap['ZCH'] = 'ZCH';
+	
+	   receiptPrefixMap['ZHN'] = 'ZHN';
+	
+	   receiptPrefixMap['ZLA'] = 'ZLA';
+	
+	   receiptPrefixMap['ZMI'] = 'ZMI';
+	
+	   receiptPrefixMap['ZNK'] = 'ZNK';
+	
+	   receiptPrefixMap['ZNY'] = 'ZNY';
+	
+	   receiptPrefixMap['ZSF'] = 'ZSF';
+	  
+	
+  var validationMessages = new Object;
+  validationMessages['error.empty.receiptnumber'] = 
+  'Please enter an application receipt number.';
+   validationMessages['error.invalid.receiptnumber'] = 
+   'The application receipt number entered is invalid. Please check your receipt number and try again.';
+  validationMessages['error.popup.introduction'] = 
+   'You have the following errors:';
+  validationMessages['error.empty.username'] = 
+   'User name is required';	
+  validationMessages['error.empty.password'] = 
+   'Password is required';   		
+   
+   validationMessages['error.empty.firstname'] = 
+   'First name is required';
+   validationMessages['error.empty.lastname'] = 
+    'Last name is required';
+   validationMessages['error.empty.country'] = 
+    'Country/Region is required';
+   validationMessages['error.empty.city'] = 
+    'City is required';	
+   validationMessages['error.empty.postalcode'] = 
+    'Postal code is required';   	
+   validationMessages['error.empty.email'] = 
+	'Email address is required';
+   validationMessages['error.empty.passwordconfirmation'] = 
+	'Password confirmation is required';
+   validationMessages['error.empty.state'] = 
+	'State is required for United States of America';
+   validationMessages['error.empty.passwordhintquestion1'] = 
+	'Password hint question 1 is required';	
+   validationMessages['error.empty.passwordhintanswer1'] = 
+	'Password hint answer 1 is required'; 
+   validationMessages['error.empty.passwordhintquestion2'] = 
+	'Password hint question 2 is required';	
+   validationMessages['error.empty.passwordhintanswer2'] = 
+	'Password hint answer 2 is required'; 	
+   validationMessages['error.empty.passwordhintquestion3'] = 
+	'Password hint question 3 is required';	
+   validationMessages['error.empty.passwordhintanswer3'] = 
+	'Password hint answer 3 is required'; 
+   validationMessages['error.empty.passwordhintquestion4'] = 
+	'Password hint question 4 is required';	
+   validationMessages['error.empty.passwordhintanswer4'] = 
+	'Password hint answer 4 is required'; 		
+   validationMessages['error.invalid.email'] = 
+	'Enter a valid email address'; 
+   validationMessages['error.invalid.mobilePhone'] = 
+	'Mobile phone must be ten digits. Hyphens are optional (###-###-####).'; 	
+   validationMessages['error.empty.userSubType'] = 
+    'User type is required';		  
+   validationMessages['error.invalid.postalCode'] = 
+    'US postal code must be either five digits or nine digits with a hyphen ((#####-####)';	      
+   validationMessages['error.invalid.userNameLength'] = 
+    'User Name must be between 8 and 14 characters';
+   validationMessages['error.invalid.passwordDollarSign'] = 
+    'Password cannot contain the dollar sign';        
+   validationMessages['error.invalid.passwordUpperCase'] = 
+    'Password must contain at least one upper case character'; 
+   validationMessages['error.invalid.passwordLowerCase'] = 
+    'Password must contain at least one lower case character';     
+   validationMessages['error.invalid.passwordUserName'] = 
+    'Password cannot contain your user name';
+   validationMessages['error.invalid.passwordNumber'] = 
+    'Password must contain at least one number';          
+   validationMessages['error.invalid.passwordPassword'] = 
+    'Password cannot contain the word "password"';        
+   validationMessages['error.invalid.passwordConsecutiveChars'] = 
+    'Password cannot contain more than two consecutive identical characters';          
+   validationMessages['error.empty.organizationName'] = 
+    'Organization name is required'; 
+   validationMessages['error.empty.organizationType'] = 
+    'Organization type is required';        
+   validationMessages['error.invalid.passwordConfirmationMatch'] = 
+    'Password confirmation must match the password';   
+   validationMessages['error.empty.passwordhintanswer'] = 
+     'Password hint answer is required';    
+   validationMessages['error.invalid.passwordLength'] = 
+     'Password must be between 8 and 14 characters';         
+   validationMessages['error.invalid.userNameDollarSign'] = 
+     'User name cannot contain the dollar sign';        
+
+</script> 
+   
+  <a href="#Content" class="skipNav" id="skipper">Skip to Content</a>
+  <!-- header section -->
+  <div class="header">
+    <div class="top-bar">
+  <div class="container">
+    
+    
+    <div class="left-side">
+      <span class="pull-left"></span>
+      <span class="pull-left">Official Website of the Department of Homeland Security</span> 
+    </div>
+    <div class="pull-right">
+      
+      
+
+       
+      
+      
+      
+      	
+      
+         
+            
+                   
+       
+       
+ 	  <script type="text/javascript">var changeLangTo = "es";</script>
+	  <a href="javascript:void(0)" id="changeLocaleAnchor" class="right-side" title="Cambiar idioma a español" lang="es-US">Español</a>
+	  
+    </div>
+    
+    
+    
+    <div class="mid-logo" >
+      <a href="http://www.uscis.gov" title="U.S. Department of Homeland Security seal, U.S. Citizenship and Immigration Services logo" class="mid-logo-visual" target="_blank" >
+        
+      </a>
+    </div>
+  </div>
+</div>
+<div class="bottom-sec">
+  <div class="container">
+    <ul class="top-link">
+      
+      
+      
+           
+      <li>
+	      
+	        <a href="/casestatus/displayLogon.do" title="Login">Login</a>
+	       
+	       
+	       
+	       
+	       
+	       
+	        
+	        &nbsp;<span>or</span>
+      </li>
+      
+      
+           
+   
+      
+          
+    
+      <li>      
+	              
+	       	 <a href="disclaimer.do" title="Sign up">Sign up</a>
+	       
+	       
+	       
+	        
+	       
+	          
+	           
+      </li>
+    </ul>
+    
+    <ul class="top-link-right">
+      
+      
+      <li>
+      
+      
+      
+      
+      
+      
+      
+      </li>
+    </ul>
+    
+  </div>
+</div>
+
+<div class="menu-bar">
+  <div class="container2">
+    <div class="navbar navbar-default show-print">
+      <div class="navbar-header">
+      <div class="container"> 
+        
+		<a href="javascript:void(0)" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"
+        alt="Toggle Navigation" title="Toggle Navigation"  tabindex="-1">
+          
+        </a>
+        </div>
+      </div>
+      <div class="container">
+      <div class="navbar-collapse collapse show-print">
+      
+        
+          <ul class="navbar-nav nav left">
+            
+            
+            <li> <a href="http://www.uscis.gov/forms" target="_blank" >FORMS</a> 
+            </li>
+            
+            
+            <li> <a href="http://www.uscis.gov/news" target="_blank" >NEWS</a> 
+            </li>
+            
+            
+            <li> <a href="http://www.uscis.gov/us-citizenship" target="_blank" >CITIZENSHIP</a> 
+            </li>
+            </ul>
+            <ul class="navbar-nav nav right">
+            
+            
+            <li> <a href="http://www.uscis.gov/greencard" target="_blank" >GREEN CARD</a> 
+            </li>
+            
+            
+            <li> <a href="http://www.uscis.gov/tools" target="_blank" >TOOLS</a> 
+            </li>
+            
+            
+            <li> <a href="http://www.uscis.gov/laws" target="_blank" >LAWS</a> 
+            </li>
+          </ul>
+        
+        
+        
+        
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </div>
+  <!-- content section -->
+  <div class="main-content-sec pb40">
+    
+
+
+
+
+
+
+
+<span id="Content" > </span>
+
+  <div class="big-banner02 mb70">
+    <div class="main-row">
+    	<div class="container">  
+        	<div class="login-panel-sec"> 
+        	 
+	            <div class="form-sec">
+	            	<div class="text-center"></div>
+	                <div class="form-horizontal">
+		                <div class="form-group mt30">
+		                	<div class="col-sm-12 text-left">
+		                		<label for="accessviolation">
+		                			It was reported to us that your IP address or internet gateway has been locked out for a select period of time.  This is due to an unusually high rate of use.  In order to avoid this issue, please create a Customer account (single applicant) or a Representative account (representing many individuals).
+		                		</label>
+		                		</div>
+		                </div>
+
+
+	             	</div>
+	            </div>              
+
+        </div> 
+		</div>
+    </div>
+  </div>
+  </div>
+  <!-- footer section -->
+  <div class="footer-container">
+    <div class="container">
+	  
+      
+      
+      
+        
+        
+        
+                  
+      
+      
+        
+        
+        
+                                   
+      
+      
+      <div class="footer-logo">
+        <a href="http://www.uscis.gov" title="U.S. Department of Homeland Security seal, U.S. Citizenship and Immigration Services logo"  class="footer-logo-visual" target="_blank" >
+          
+        </a>
+      </div>
+      <div class="social_icon">
+      	<ul>
+        <li>
+        	<a href="https://www.facebook.com/uscis" title="USCIS on Facebook" target="_blank">
+        		
+        	</a>
+        </li>
+        <li>
+        	<a href="https://www.twitter.com/uscis"  title="USCIS on Twitter" target="_blank">
+        		
+        	</a>
+        </li>
+        <li>
+        	<a href="https://www.youtube.com/uscis" title="USCIS on YouTube" target="_blank">
+        		
+        	</a>
+        </li>
+        
+        </ul>
+      </div>
+
+  
+  
+  
+  <div class="footer-nav">
+      <div class="footer-block">
+        
+        <h4 class="heading">TOPICS</h4>
+        <ul class="show-print">
+          
+          
+          <li> <a href="http://www.uscis.gov/adoption" target="_blank" >Adoption</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/about-us/directorates-and-program-offices/administrative-appeals-office-aao/administrative-appeals-office-aao" target="_blank" >Appeals</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/avoid-scams" target="_blank" >Avoid Scams</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/us-citizenship" target="_blank" >Citizenship</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/citizenship" target="_blank" >Citizenship Resource Center</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/family" target="_blank" >Family</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/greencard" target="_blank" >Green Card</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/historyandgenealogy" target="_blank" >History and Genealogy</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/humanitarian" target="_blank" >Humanitarian</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/military" target="_blank" >Military</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/uscis-elis" target="_blank" >File Online</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/visit-united-states/visit-us" target="_blank" >Visit the U.S.</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/working-united-states/working-us" target="_blank" >Working in the U.S.</a> 
+          </li>
+        </ul>
+      </div>
+      <div class="footer-block">
+        
+        <h4 class="heading">VERIFICATION</h4>
+        <ul class="show-print">
+          
+          
+          <li> <a href="http://www.uscis.gov/e-verify" target="_blank" >E-Verify</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/i-9-central" target="_blank" >I-9 Central</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/self-check" target="_blank" >Self Check</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/save" target="_blank" >SAVE</a> 
+          </li>
+
+ 		  
+          
+          <li> <a href="https://www.uscis.gov/save/save-case-check" target="_blank" >SAVE Case Check</a> 
+          </li>            
+          
+        </ul>
+      </div>
+      <div class="footer-block">
+        
+        <h4 class="heading">POLICIES</h4>
+        <ul class="show-print">
+          
+          
+          <li> <a href="http://www.uscis.gov/about-us/freedom-information-and-privacy-act-foia/uscis-freedom-information-act-and-privacy-act" target="_blank" >USCIS Freedom of Information Act and Privacy Act</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/website-policies/privacy-and-legal-disclaimers" target="_blank" >Privacy and Legal Disclaimers</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/no-fear-act/equal-employment-opportunity-data-posted-pursuant-no-fear-act" target="_blank" >No FEAR Act</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/website-policies" target="_blank" >Website Policies</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/accessibility" target="_blank" >Accessibility</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/social-media/social-media-policy" target="_blank" >Social Media Policy</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.uscis.gov/website-policies/plug-ins" target="_blank" >Plug-ins</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.adobe.com/reader" target="_blank" >Adobe Reader</a> 
+          </li>
+        </ul>
+      </div>
+      <div class="footer-block">
+        
+        <h4 class="heading">GOVERNMENT</h4>
+        <ul class="show-print">
+          
+          
+          <li> <a href="http://travel.state.gov/passport/passport_1738.html" target="_blank" >Passports</a> 
+          </li>
+          
+          
+          <li> <a href="http://travel.state.gov/visa/bulletin/bulletin_1360.html" target="_blank" >Visa Bulletin</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.dhs.gov" target="_blank" >U.S. Department of Homeland Security</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.cbp.gov" target="_blank" >U.S. Customs &amp; Border Protection</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.ice.gov" target="_blank" >U.S. Immigration &amp; Customs Enforcement</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.whitehouse.gov" target="_blank" >White House</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.state.gov" target="_blank" >U.S. Department of State</a> 
+          </li>
+          
+          
+          <li> <a href="http://www.usa.gov" target="_blank" >USA.gov</a> 
+          </li>
+        </ul>
+      </div>
+    </div>
+  
+  
+  <div class="main-row">
+    <div class="footer-logo-section clearfix">
+      <div class="footer-contant">
+        <p>
+          National Customer Service Center
+          <br />
+          1-800-375-5283
+          <br />
+          <br />
+          TDD for the Hearing Impaired
+          <br />
+          1-800-767-1833
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </div>
+  <div id="popupDialogArea"></div>  
+</body>
+</html>

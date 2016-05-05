@@ -12,7 +12,7 @@
     "scripts": ["js/background.js"]
   },
   "permissions": [
-    "activeTab",
+    "storage",
     "tabs",
     "https://egov.uscis.gov/"
   ],

@@ -7,37 +7,14 @@ html {
     margin: auto;
 }
 
-.container-main {
+body {
     width: 600px;
 }
 
-.form-query {
-    width: 600px;
-}
-
-.form-query .form-group-receipt-num {
-    width: 300px;
-}
-.form-query .form-group-count {
-    width: 180px;
-}
-
-.form-query .form-group-button {
-    width: 100px;
-}
-
-.form-query .btn-query {
-    width: 100%;
-}
-
-.form-query .input-fullw {
+.form-query input.full-width, .form-query button.full-width {
     width: 100%;
 }
 
 .form-query {
-    margin-top: 20px;
-}
-
-.table-query-result {
     margin-top: 20px;
 }
