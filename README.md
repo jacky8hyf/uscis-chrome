@@ -1,4 +1,4 @@
-# USCIS Scraper as a Chrome Extension
+# USCIS Scraper as a Chrome App
 [Chrome Web Store page](https://chrome.google.com/webstore/detail/uscis-scraper/pggddnffndieefnolacblagcomdnobko)
 
 ## Running it
