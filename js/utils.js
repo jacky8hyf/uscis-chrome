@@ -70,7 +70,7 @@ var utils = (function() {
                 dfd.reject(errmsg);
                 return;
             }
-            if(page.find('label[for=accessviolation]')) {
+            if(page.find('label[for=accessviolation]').length) {
                 dfd.reject('IP blocked.')
                 return;
             }
